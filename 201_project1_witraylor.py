@@ -79,11 +79,17 @@ class Test(unittest.TestCase):
             {'State': 'Kentucky', 'Category': 'Furniture', 'Sales': '731.94'},
             {'State': 'California', 'Category': 'Office Supplies', 'Sales': '14.62'},
         ]
+
         self.sales_dicts = [
             {'Kentucky': ['Furniture', 261.96]},
             {'Kentucky': ['Furniture', 731.94]},
             {'California': ['Office Supplies', 14.62]},
         ]
+
+        self.avg_dict = {
+            'Kentucky': 496.95,
+            'California': 14.62,
+        }
     
     def test_calculate_avgs(self):
         result = calculate_avgs(self.sales_dicts)
@@ -94,6 +100,11 @@ class Test(unittest.TestCase):
         }
 
         result = calculate_avgs(self.sales_dicts)
+        self.assertEqual(result, expected)
+
+    def test_find_highest_avg(self):
+        result = find_highest_avg_state(self.avg_dict)
+        expected = ('Kentucky', 496.95)
         self.assertEqual(result, expected)
 
     
