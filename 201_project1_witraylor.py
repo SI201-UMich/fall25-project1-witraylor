@@ -55,26 +55,52 @@ def calculate_avgs(sales_dicts):
     print(f"Here are the averages: {avg_dict}")
     return avg_dict
 
+#4: Find the state with the highest sales average
 def find_highest_avg_state(avg_dict):
     if avg_dict == {}:
         return None
 
-    highest_state = max(avg_dict, key=avg_dict.get)
+    highest_state = max(avg_dict, key = avg_dict.get)
     highest_value = avg_dict[highest_state]
 
     return (highest_state, highest_value)
 
+#5: Find the category with the highest total sales
+def find_highest_cat(dict_list):
+    category_totals = {}
 
-#dict_list = read_csv('SampleSuperstore.csv')
-#sales_dict = create_sales_dict(dict_list)
-#print(sales_dict)
+    for sales_record in dict_list:
+        category = sales_record['Category']
+        sales = float(sales_record['Sales'])
+        category_totals[category] = category_totals.get(category, 0) + sales
+
+    if category_totals == {}:
+        return None
+
+    top_category = max(category_totals, key = category_totals.get)
+    top_sales = round(category_totals[top_category], 2)
+
+    return (top_category, top_sales)
+
+#6: Write results into a txt file
+def write_results(fname, avg_dict, top_state, top_category):
+    with open(fname, 'w') as f:
+        f.write("Average Sales by State\n")
+        for state, avg in avg_dict.items():
+            f.write(f"{state}: ${avg}\n")
+
+        f.write("\nState with Highest Average Sales\n")
+        f.write(f"{top_state[0]}: ${top_state[1]}\n")
+
+        f.write("\nCategory with Highest Total Sales\n")
+        f.write(f"{top_category[0]}: ${top_category[1]}\n")
 
 
 
-
+#Test Cases
 class Test(unittest.TestCase):
     def setUp(self):
-        self.sample_data = [
+        self.test_data = [
             {'State': 'Kentucky', 'Category': 'Furniture', 'Sales': '261.96'},
             {'State': 'Kentucky', 'Category': 'Furniture', 'Sales': '731.94'},
             {'State': 'California', 'Category': 'Office Supplies', 'Sales': '14.62'},
@@ -107,16 +133,27 @@ class Test(unittest.TestCase):
         expected = ('Kentucky', 496.95)
         self.assertEqual(result, expected)
 
+    def test_highest_cat(self):
+        result = find_highest_cat(self.test_data)
+        expected = ('Furniture', 993.9)
+        self.assertEqual(result, expected)
+
+    def test_empty_data(self):
+        highest_avg_result = find_highest_avg_state({})
+        highest_cat_result = find_highest_cat([])
+        self.assertIsNone(highest_cat_result)
+        self.assertIsNone(highest_avg_result)
+
     
-
-
-
-
-    
-
-
 def main():
     unittest.main(verbosity=2)
+    dict_list = read_csv('SampleSuperstore.csv')
+    sales_dicts = create_sales_dict(dict_list)
+    avg_dict = calculate_avgs(sales_dicts)
+    top_state = find_highest_avg_state(avg_dict)
+    top_category = find_highest_cat(dict_list)
+
+    write_results("sales_results.txt", avg_dict, top_state, top_category)
 
 if __name__ == '__main__':
     main()
